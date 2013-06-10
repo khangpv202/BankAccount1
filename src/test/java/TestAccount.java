@@ -6,9 +6,7 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Created with IntelliJ IDEA.
@@ -29,10 +27,12 @@ public class TestAccount {
 
     @Test
     public void testNewAccount(){
-        BankAccount.openAccount("0123456");
-        ArgumentCaptor<BankAccountDTO> savedAccount = ArgumentCaptor.forClass(BankAccountDTO.class);
-        verify(mockAccount).save(savedAccount.capture());
-        assertEquals(savedAccount.getValue().getbalance(), 0.0,0.01);
-        assertEquals(savedAccount.getValue().getAccountNumber(), "0123456");
+        BankAccount.openAccount("1234567890");
+
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+
+        verify(mockAccount,times(1)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getbalance(), 0.0, 0.01);
+        assertEquals(savedAccountRecords.getValue().getAccountNumber(), "1234567890");
     }
 }

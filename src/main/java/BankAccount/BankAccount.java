@@ -1,5 +1,5 @@
 package BankAccount;
-
+import BankAccountDTO.BankAccountDTO;
 import BankAccountDAO.BankAccountDAO;
 
 /**
@@ -10,10 +10,14 @@ import BankAccountDAO.BankAccountDAO;
  * To change this template use File | Settings | File Templates.
  */
 public class BankAccount {
-    public static void setBankAccountDAO(BankAccountDAO mockAccount) {
+    private static BankAccountDAO bankAccountDao;
+    public static void setBankAccountDAO(BankAccountDAO accountDAO) {
+        BankAccount.bankAccountDao = accountDAO;
     }
 
-    public static String openAccount(String s) {
-        return s;
+    public static String openAccount(String accountNumber) {
+        BankAccountDTO account = new BankAccountDTO(accountNumber);
+        bankAccountDao.save(account);
+        return accountNumber;
     }
 }
