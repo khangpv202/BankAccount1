@@ -11,13 +11,23 @@ import BankAccountDAO.BankAccountDAO;
  */
 public class BankAccount {
     private static BankAccountDAO bankAccountDao;
+    private static BankAccountDTO bankAccountDTO;
+
     public static void setBankAccountDAO(BankAccountDAO accountDAO) {
         BankAccount.bankAccountDao = accountDAO;
     }
 
-    public static String openAccount(String accountNumber) {
+    public static BankAccountDTO openAccount(String accountNumber) {
         BankAccountDTO account = new BankAccountDTO(accountNumber);
         bankAccountDao.save(account);
-        return accountNumber;
+        bankAccountDTO = account;
+        return account;
+    }
+
+    public static void deposit(double amount) {
+        double  balanceMoney =bankAccountDTO.getbalance()+amount;
+        bankAccountDTO.setBalance(balanceMoney);
+        bankAccountDao.save(bankAccountDTO);
+
     }
 }

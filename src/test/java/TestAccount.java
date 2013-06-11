@@ -35,4 +35,15 @@ public class TestAccount {
         assertEquals(savedAccountRecords.getValue().getbalance(), 0.0, 0.01);
         assertEquals(savedAccountRecords.getValue().getAccountNumber(), "1234567890");
     }
+    @Test
+    public void testDeposit(){
+        BankAccount.openAccount("1234567890");
+        BankAccount.deposit(50000.00);
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+        verify(mockAccount,times(2)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getbalance(), 50000.00, 0.01);
+        BankAccount.deposit(10000.00);
+        verify(mockAccount,times(3)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getbalance(), 60000.00, 0.01);
+    }
 }
