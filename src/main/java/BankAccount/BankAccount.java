@@ -2,6 +2,8 @@ package BankAccount;
 import BankAccountDTO.BankAccountDTO;
 import BankAccountDAO.BankAccountDAO;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: khangpv
@@ -24,7 +26,7 @@ public class BankAccount {
         return account;
     }
 
-    public static void deposit(String accountNumber, double amount, String description) {
+    public static BankAccountDTO deposit(String accountNumber, double amount, String description) {
 
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
         if(bankaccountDTO!=null){
@@ -32,10 +34,10 @@ public class BankAccount {
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
         }
-
+        return bankaccountDTO;
     }
 
-    public static void deposit(String accountNumber, long timestamp, double amount, String descripton) {
+    public static BankAccountDTO deposit(String accountNumber, long timestamp, double amount, String descripton) {
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
         if(bankaccountDTO!=null){
             double balanceMoney =bankaccountDTO.getbalance()+amount;
@@ -43,18 +45,20 @@ public class BankAccount {
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
         }
+        return bankaccountDTO;
     }
 
-    public static void withDraw(String accountNumber, double amount, String description) {
+    public static BankAccountDTO withDraw(String accountNumber, double amount, String description) {
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
         if(bankaccountDTO!=null){
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
         }
+        return bankaccountDTO;
     }
 
-    public static void withDraw(String accountNumber, long timestamp, double amount, String description) {
+    public static BankAccountDTO withDraw(String accountNumber, long timestamp, double amount, String description) {
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
         if(bankaccountDTO!=null){
             double balanceMoney =bankaccountDTO.getbalance()+amount;
@@ -62,5 +66,14 @@ public class BankAccount {
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
         }
+        return bankaccountDTO;
+    }
+
+    public static List<BankAccountDTO> getTransactionsOccurred(BankAccountDTO accountNumber) {
+        List<BankAccountDTO> listDTO = bankAccountDao.getTransactionsOccurred(accountNumber);
+        if(listDTO!=null)
+            System.out.println("not null");
+        else System.out.println("null");
+        return listDTO;
     }
 }

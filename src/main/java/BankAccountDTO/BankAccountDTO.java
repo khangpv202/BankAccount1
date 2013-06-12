@@ -15,7 +15,7 @@ public class BankAccountDTO {
     public BankAccountDTO(String accountNumber) {
         //To change body of created methods use File | Settings | File Templates.
         balance = 0;
-        this.accountNumber= accountNumber;
+        this.accountNumber = accountNumber;
         timeStamp = 0;
     }
 
@@ -34,10 +34,12 @@ public class BankAccountDTO {
     public String getAccountNumber() {
         return this.accountNumber;
     }
-    public void setTimeStamp(long timestamp){
-        this.timeStamp= timestamp;
+
+    public void setTimeStamp(long timestamp) {
+        this.timeStamp = timestamp;
     }
-    public long getTimeStamp(){
+
+    public long getTimeStamp() {
         return timeStamp;
     }
 }

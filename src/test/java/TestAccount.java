@@ -1,11 +1,16 @@
 import BankAccount.BankAccount;
 import BankAccountDAO.BankAccountDAO;
 import BankAccountDTO.BankAccountDTO;
+import TransactionDTO.TransactionDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 /**
@@ -74,7 +79,7 @@ public class TestAccount {
         BankAccountDTO accountDTO= BankAccount.openAccount("1234567890");
         when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
 
-        BankAccount.withDraw(accountDTO.getAccountNumber(),-50.00,"first withdraw");
+        BankAccount.withDraw(accountDTO.getAccountNumber(), -50.00, "first withdraw");
 
         ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
         verify(mockAccount,times(2)).save(savedAccountRecords.capture());
@@ -92,14 +97,36 @@ public class TestAccount {
         when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
         ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
         long timestamp = 10L;
-        BankAccount.withDraw(accountDTO.getAccountNumber(),timestamp, -10.00, "second Deposit");
+        BankAccount.withDraw(accountDTO.getAccountNumber(), timestamp, -10.00, "second Deposit");
         verify(mockAccount,times(2)).save(savedAccountRecords.capture());
         assertEquals(savedAccountRecords.getValue().getTimeStamp(), timestamp, 0);
     }
 
-    @Test
+    /*@Test
     public void testGetTransactionsOccurred(){
 
-    }
+        BankAccountDTO initialAccount= BankAccount.openAccount("1234567890");
+        List<BankAccountDTO> accountDTOs = new ArrayList<BankAccountDTO>();
+
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+
+        BankAccountDTO accountAfterFirstTransaction = BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "first deposit");
+        BankAccountDTO accountAfterSecondTransaction = BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "second deposit");
+        BankAccountDTO accountAfterThirdTransaction = BankAccount.withDraw(initialAccount.getAccountNumber(),10.00, "first withdraw");
+
+        when(mockAccount.getTransactionsOccurred(initialAccount)).thenReturn(accountDTOs);
+
+        accountDTOs.add(accountAfterFirstTransaction);
+        accountDTOs.add(accountAfterSecondTransaction);
+        accountDTOs.add(accountAfterThirdTransaction);
+
+
+        verify(mockAccount).getTransactionsOccurred(savedAccountRecords.capture());
+
+        //List<BankAccountDTO> transactionDTOList= BankAccount.getTransactionsOccurred(initialAccount);
+
+        *//*for(BankAccountDTO i:accountDTOs)
+            System.out.println(i.getbalance());*//*
+    }*/
 
 }

@@ -2,6 +2,8 @@ package BankAccountDAO;
 
 import BankAccountDTO.BankAccountDTO;
 
+import java.util.List;
+
 /**
  * Created with IntelliJ IDEA.
  * User: khangpv
@@ -18,4 +20,9 @@ public class BankAccountDAO {
     public BankAccountDTO getBankAccountDTO(String accountNumber){
            return null;
     }
+    public List<BankAccountDTO> getTransactionsOccurred(BankAccountDTO accountDTO){
+          return null;
+    }
+
+
 }
