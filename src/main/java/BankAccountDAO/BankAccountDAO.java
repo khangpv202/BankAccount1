@@ -11,10 +11,11 @@ import BankAccountDTO.BankAccountDTO;
  */
 public class BankAccountDAO {
 
-    public BankAccountDAO(String accountNumber) {
-    }
+
 
     public void save(BankAccountDTO accountDTO) {
-
+    }
+    public BankAccountDTO getBankAccountDTO(String accountNumber){
+           return null;
     }
 }

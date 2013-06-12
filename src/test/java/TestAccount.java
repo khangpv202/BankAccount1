@@ -18,7 +18,6 @@ import static org.mockito.Mockito.*;
 public class TestAccount {
     BankAccountDAO mockAccount = mock(BankAccountDAO.class);
 
-
     @Before
     public void initial(){
         reset(mockAccount);
@@ -35,15 +34,72 @@ public class TestAccount {
         assertEquals(savedAccountRecords.getValue().getbalance(), 0.0, 0.01);
         assertEquals(savedAccountRecords.getValue().getAccountNumber(), "1234567890");
     }
+
     @Test
     public void testDeposit(){
-        BankAccount.openAccount("1234567890");
-        BankAccount.deposit(50000.00);
+        BankAccountDTO accountDTO= BankAccount.openAccount("1234567890");
+        when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
+
+        BankAccount.deposit(accountDTO.getAccountNumber(),50.00,"first deposit");
+
         ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
         verify(mockAccount,times(2)).save(savedAccountRecords.capture());
-        assertEquals(savedAccountRecords.getValue().getbalance(), 50000.00, 0.01);
-        BankAccount.deposit(10000.00);
+        assertEquals(savedAccountRecords.getValue().getbalance(), 50.00, 0.01);
+
+        //add more amount
+        BankAccount.deposit(accountDTO.getAccountNumber(), 10.00, "second Deposit");
         verify(mockAccount,times(3)).save(savedAccountRecords.capture());
-        assertEquals(savedAccountRecords.getValue().getbalance(), 60000.00, 0.01);
+        assertEquals(savedAccountRecords.getValue().getbalance(), 60.00, 0.01);
+
+        long timestamp = 10L;
+        BankAccount.deposit(accountDTO.getAccountNumber(),timestamp, 10.00, "second Deposit");
+        verify(mockAccount,times(4)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getTimeStamp(), timestamp, 0);
+
     }
+
+    @Test
+    public void testDepositHasTimeStamp(){
+        BankAccountDTO accountDTO= BankAccount.openAccount("1234567890");
+        when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+        long timestamp = 10L;
+        BankAccount.deposit(accountDTO.getAccountNumber(),timestamp, 10.00, "second Deposit");
+        verify(mockAccount,times(2)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getTimeStamp(), timestamp, 0);
+    }
+
+    @Test
+    public void testWithDraw(){
+        BankAccountDTO accountDTO= BankAccount.openAccount("1234567890");
+        when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
+
+        BankAccount.withDraw(accountDTO.getAccountNumber(),-50.00,"first withdraw");
+
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+        verify(mockAccount,times(2)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getbalance(), -50.00, 0.01);
+
+        //add more amount
+        BankAccount.withDraw(accountDTO.getAccountNumber(), -10.00, "second withdraw");
+        verify(mockAccount,times(3)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getbalance(), -60.00, 0.01);
+    }
+
+    @Test
+    public void testWithDrawHasTimestamp(){
+        BankAccountDTO accountDTO= BankAccount.openAccount("1234567890");
+        when(mockAccount.getBankAccountDTO(accountDTO.getAccountNumber())).thenReturn(accountDTO);
+        ArgumentCaptor<BankAccountDTO> savedAccountRecords = ArgumentCaptor.forClass(BankAccountDTO.class);
+        long timestamp = 10L;
+        BankAccount.withDraw(accountDTO.getAccountNumber(),timestamp, -10.00, "second Deposit");
+        verify(mockAccount,times(2)).save(savedAccountRecords.capture());
+        assertEquals(savedAccountRecords.getValue().getTimeStamp(), timestamp, 0);
+    }
+
+    @Test
+    public void testGetTransactionsOccurred(){
+
+    }
+
 }

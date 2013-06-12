@@ -20,14 +20,47 @@ public class BankAccount {
     public static BankAccountDTO openAccount(String accountNumber) {
         BankAccountDTO account = new BankAccountDTO(accountNumber);
         bankAccountDao.save(account);
-        bankAccountDTO = account;
+        bankAccountDTO=account;
         return account;
     }
 
-    public static void deposit(double amount) {
-        double  balanceMoney =bankAccountDTO.getbalance()+amount;
-        bankAccountDTO.setBalance(balanceMoney);
-        bankAccountDao.save(bankAccountDTO);
+    public static void deposit(String accountNumber, double amount, String description) {
 
+        BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+        if(bankaccountDTO!=null){
+            double balanceMoney =bankaccountDTO.getbalance()+amount;
+            bankaccountDTO.setBalance(balanceMoney);
+            bankAccountDao.save(bankAccountDTO);
+        }
+
+    }
+
+    public static void deposit(String accountNumber, long timestamp, double amount, String descripton) {
+        BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+        if(bankaccountDTO!=null){
+            double balanceMoney =bankaccountDTO.getbalance()+amount;
+            bankaccountDTO.setTimeStamp(timestamp);
+            bankaccountDTO.setBalance(balanceMoney);
+            bankAccountDao.save(bankAccountDTO);
+        }
+    }
+
+    public static void withDraw(String accountNumber, double amount, String description) {
+        BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+        if(bankaccountDTO!=null){
+            double balanceMoney =bankaccountDTO.getbalance()+amount;
+            bankaccountDTO.setBalance(balanceMoney);
+            bankAccountDao.save(bankAccountDTO);
+        }
+    }
+
+    public static void withDraw(String accountNumber, long timestamp, double amount, String description) {
+        BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+        if(bankaccountDTO!=null){
+            double balanceMoney =bankaccountDTO.getbalance()+amount;
+            bankaccountDTO.setTimeStamp(timestamp);
+            bankaccountDTO.setBalance(balanceMoney);
+            bankAccountDao.save(bankAccountDTO);
+        }
     }
 }
