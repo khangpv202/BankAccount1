@@ -1,6 +1,8 @@
 package BankAccount;
 import BankAccountDTO.BankAccountDTO;
 import BankAccountDAO.BankAccountDAO;
+import TransactionDAO.TransactionDAO;
+import TransactionDTO.TransactionDTO;
 
 import java.util.List;
 
@@ -14,6 +16,7 @@ import java.util.List;
 public class BankAccount {
     private static BankAccountDAO bankAccountDao;
     private static BankAccountDTO bankAccountDTO;
+    private static TransactionDAO transactionDAO;
 
     public static void setBankAccountDAO(BankAccountDAO accountDAO) {
         BankAccount.bankAccountDao = accountDAO;
@@ -26,15 +29,17 @@ public class BankAccount {
         return account;
     }
 
-    public static BankAccountDTO deposit(String accountNumber, double amount, String description) {
+    public static TransactionDTO deposit(String accountNumber, double amount, String description) {
 
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+
         if(bankaccountDTO!=null){
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
+            transactionDAO.save(new TransactionDTO(accountNumber,amount,description));
         }
-        return bankaccountDTO;
+        return new TransactionDTO(accountNumber,amount,description);
     }
 
     public static BankAccountDTO deposit(String accountNumber, long timestamp, double amount, String descripton) {
@@ -48,32 +53,37 @@ public class BankAccount {
         return bankaccountDTO;
     }
 
-    public static BankAccountDTO withDraw(String accountNumber, double amount, String description) {
+    public static TransactionDTO withDraw(String accountNumber, double amount, String description) {
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
         if(bankaccountDTO!=null){
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
+            transactionDAO.save(new TransactionDTO(accountNumber,amount,description));
         }
-        return bankaccountDTO;
+        return new TransactionDTO(accountNumber,amount,description);
     }
 
-    public static BankAccountDTO withDraw(String accountNumber, long timestamp, double amount, String description) {
+    public static TransactionDTO withDraw(String accountNumber, long timestamp, double amount, String description) {
         BankAccountDTO bankaccountDTO = bankAccountDao.getBankAccountDTO(accountNumber);
+        TransactionDTO transactionDTO = null;
         if(bankaccountDTO!=null){
+            timestamp = System.currentTimeMillis();
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setTimeStamp(timestamp);
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
+            transactionDTO = new TransactionDTO(accountNumber,amount,description);
         }
-        return bankaccountDTO;
+        return transactionDTO;
     }
 
-    public static List<BankAccountDTO> getTransactionsOccurred(BankAccountDTO accountNumber) {
-        List<BankAccountDTO> listDTO = bankAccountDao.getTransactionsOccurred(accountNumber);
-        if(listDTO!=null)
-            System.out.println("not null");
-        else System.out.println("null");
-        return listDTO;
+    public static void setTransactionDAO(TransactionDAO transaction) {
+        BankAccount.transactionDAO = transaction;
+    }
+
+    public static List<TransactionDTO> getTransactionsOccurred(String accountNumber) {
+        List<TransactionDTO> listStransactionDTO = transactionDAO.getTransactionsOccurred(accountNumber);
+        return listStransactionDTO;
     }
 }

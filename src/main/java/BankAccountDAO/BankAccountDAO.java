@@ -1,6 +1,7 @@
 package BankAccountDAO;
 
 import BankAccountDTO.BankAccountDTO;
+import TransactionDTO.TransactionDTO;
 
 import java.util.List;
 
@@ -20,9 +21,4 @@ public class BankAccountDAO {
     public BankAccountDTO getBankAccountDTO(String accountNumber){
            return null;
     }
-    public List<BankAccountDTO> getTransactionsOccurred(BankAccountDTO accountDTO){
-          return null;
-    }
-
-
 }
