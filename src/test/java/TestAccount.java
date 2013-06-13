@@ -137,5 +137,31 @@ public class TestAccount {
             assertEquals(accountDTOs.get(i).getAmount(),transactionDTOList.get(i).getAmount(),0.01);
         }
     }
+    @Test
+    public void testTransactionInIntervalTime(){
+        long startTime = 1371094606541L;
+        BankAccountDTO initialAccount= BankAccount.openAccount("1234567890");
+        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
+
+        when(mockAccount.getBankAccountDTO(initialAccount.getAccountNumber())).thenReturn(initialAccount);
+
+        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
+
+        TransactionDTO accountAfterFirstTransaction = BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "first deposit");
+        TransactionDTO accountAfterSecondTransaction= BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "second deposit");
+        TransactionDTO accountAfterThirdTransaction = BankAccount.withDraw(initialAccount.getAccountNumber(),10.00, "first withdraw");
+
+        //add transaction into mock()
+        accountDTOs.add(accountAfterFirstTransaction);
+        accountDTOs.add(accountAfterSecondTransaction);
+        accountDTOs.add(accountAfterThirdTransaction);
+        long stopTime = 1371094613741L;
+        when(mockTransaction.getTransactionsOccurred(initialAccount.getAccountNumber(),startTime,stopTime)).thenReturn(accountDTOs);
+        List<TransactionDTO> transactionDTOList = BankAccount.getTransactionsOccurred(initialAccount.getAccountNumber(), startTime, stopTime);
+        verify(mockTransaction,times(1)).getTransactionsOccurred();
+        assertEquals(savedTransactiontRecords.getValue(),startTime);
+
+
+    }
 
 }
