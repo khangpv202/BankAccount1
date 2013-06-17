@@ -1,6 +1,7 @@
 package BankAccount;
 import BankAccountDTO.BankAccountDTO;
 import BankAccountDAO.BankAccountDAO;
+import Transaction.Transaction;
 import TransactionDAO.TransactionDAO;
 import TransactionDTO.TransactionDTO;
 
@@ -16,7 +17,7 @@ import java.util.List;
 public class BankAccount {
     private static BankAccountDAO bankAccountDao;
     private static BankAccountDTO bankAccountDTO;
-    private static TransactionDAO transactionDAO;
+
 
     public static void setBankAccountDAO(BankAccountDAO accountDAO) {
         BankAccount.bankAccountDao = accountDAO;
@@ -37,7 +38,7 @@ public class BankAccount {
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
-            transactionDAO.save(new TransactionDTO(accountNumber,amount,description));
+            Transaction.save(new TransactionDTO(accountNumber, amount, description));
         }
         return new TransactionDTO(accountNumber,amount,description);
     }
@@ -59,7 +60,7 @@ public class BankAccount {
             double balanceMoney =bankaccountDTO.getbalance()+amount;
             bankaccountDTO.setBalance(balanceMoney);
             bankAccountDao.save(bankAccountDTO);
-            transactionDAO.save(new TransactionDTO(accountNumber,amount,description));
+            Transaction.save(new TransactionDTO(accountNumber, amount, description));
         }
         return new TransactionDTO(accountNumber,amount,description);
     }
@@ -78,16 +79,19 @@ public class BankAccount {
         return transactionDTO;
     }
 
-    public static void setTransactionDAO(TransactionDAO transaction) {
-        BankAccount.transactionDAO = transaction;
-    }
+
 
     public static List<TransactionDTO> getTransactionsOccurred(String accountNumber) {
-        List<TransactionDTO> listStransactionDTO = transactionDAO.getTransactionsOccurred(accountNumber);
+        List<TransactionDTO> listStransactionDTO = Transaction.getTransactionsOccurred(accountNumber);
         return listStransactionDTO;
     }
 
     public static List<TransactionDTO> getTransactionsOccurred(String accountNumber, long startTime, long stopTime) {
-        return transactionDAO.getTransactionsOccurred(accountNumber,startTime,stopTime);
+
+        return Transaction.getTransactionsOccurred(accountNumber,startTime,stopTime);
+    }
+
+    public static List<TransactionDTO> getTransactionsOccurred(String accountNumber, int numberNewest) {
+        return Transaction.getTransactionsOccurred(accountNumber,numberNewest);
     }
 }

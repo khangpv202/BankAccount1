@@ -3,6 +3,7 @@ import BankAccountDAO.BankAccountDAO;
 import BankAccountDTO.BankAccountDTO;
 import TransactionDAO.TransactionDAO;
 import TransactionDTO.TransactionDTO;
+import Transaction.Transaction;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -24,12 +25,13 @@ import static org.mockito.Mockito.*;
 public class TestAccount {
     BankAccountDAO mockAccount = mock(BankAccountDAO.class);
     TransactionDAO mockTransaction = mock(TransactionDAO.class);
+    String accountNumber = "123456789";
 
     @Before
     public void initial(){
         reset(mockAccount);
         BankAccount.setBankAccountDAO(mockAccount);
-        BankAccount.setTransactionDAO(mockTransaction);
+        Transaction.setTransactionDAO(mockTransaction);
     }
 
     @Test
@@ -108,59 +110,53 @@ public class TestAccount {
         verify(mockTransaction,times(1)).save(savedTransactionRecords.capture());
         assertEquals(savedTransactionRecords.getValue().getTimeStamp(),transaction.getTimeStamp(),0.01);
     }
-
-    @Test
-    public void testGetTransactionsOccurred(){
-
-        BankAccountDTO initialAccount= BankAccount.openAccount("1234567890");
-        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
-
+    public void createAccountAndDoTransactions(){
+        BankAccountDTO initialAccount= BankAccount.openAccount(accountNumber);
         when(mockAccount.getBankAccountDTO(initialAccount.getAccountNumber())).thenReturn(initialAccount);
-        when(mockTransaction.getBankAccountDTO(initialAccount.getAccountNumber())).thenReturn(initialAccount);
-
-        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
-
         TransactionDTO accountAfterFirstTransaction = BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "first deposit");
         TransactionDTO accountAfterSecondTransaction= BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "second deposit");
         TransactionDTO accountAfterThirdTransaction = BankAccount.withDraw(initialAccount.getAccountNumber(),10.00, "first withdraw");
 
+    }
+    @Test
+    public void testGetTransactionsOccurred(){
 
-        //add transaction into mock()
-        accountDTOs.add(accountAfterFirstTransaction);
-        accountDTOs.add(accountAfterSecondTransaction);
-        accountDTOs.add(accountAfterThirdTransaction);
-
-        when(mockTransaction.getTransactionsOccurred(initialAccount.getAccountNumber())).thenReturn(accountDTOs);
-        List<TransactionDTO> transactionDTOList= BankAccount.getTransactionsOccurred(initialAccount.getAccountNumber());
+        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
+        createAccountAndDoTransactions();
+        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
+        accountDTOs = savedTransactiontRecords.getAllValues();
+        when(mockTransaction.getTransactionsOccurred(accountNumber)).thenReturn(accountDTOs);
+        List<TransactionDTO> transactionDTOList= BankAccount.getTransactionsOccurred(accountNumber);
         verify(mockTransaction,times(3)).save(savedTransactiontRecords.capture());
-        for(int i = 0;i < transactionDTOList.size(); i++){
-            assertEquals(accountDTOs.get(i).getAmount(),transactionDTOList.get(i).getAmount(),0.01);
-        }
+        assertEquals(transactionDTOList,accountDTOs);
+
     }
     @Test
     public void testTransactionInIntervalTime(){
         long startTime = 1371094606541L;
-        BankAccountDTO initialAccount= BankAccount.openAccount("1234567890");
-        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
-
-        when(mockAccount.getBankAccountDTO(initialAccount.getAccountNumber())).thenReturn(initialAccount);
-
-        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
-
-        TransactionDTO accountAfterFirstTransaction = BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "first deposit");
-        TransactionDTO accountAfterSecondTransaction= BankAccount.deposit(initialAccount.getAccountNumber(), 10.00, "second deposit");
-        TransactionDTO accountAfterThirdTransaction = BankAccount.withDraw(initialAccount.getAccountNumber(),10.00, "first withdraw");
-
-        //add transaction into mock()
-        accountDTOs.add(accountAfterFirstTransaction);
-        accountDTOs.add(accountAfterSecondTransaction);
-        accountDTOs.add(accountAfterThirdTransaction);
         long stopTime = 1371094613741L;
-        when(mockTransaction.getTransactionsOccurred(initialAccount.getAccountNumber(),startTime,stopTime)).thenReturn(accountDTOs);
-        List<TransactionDTO> transactionDTOList = BankAccount.getTransactionsOccurred(initialAccount.getAccountNumber(), startTime, stopTime);
-        verify(mockTransaction,times(1)).getTransactionsOccurred();
-        assertEquals(savedTransactiontRecords.getValue(),startTime);
+        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
+        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
+        createAccountAndDoTransactions();
+        verify(mockTransaction,times(3)).save(savedTransactiontRecords.capture());
+        accountDTOs = savedTransactiontRecords.getAllValues();
+        when(mockTransaction.getTransactionsOccurred(accountNumber,startTime,stopTime)).thenReturn(accountDTOs);
+        List<TransactionDTO> transactionDTOList = BankAccount.getTransactionsOccurred(accountNumber, startTime, stopTime);
+        assertEquals(transactionDTOList,accountDTOs);
 
+
+    }
+
+    @Test
+    public void testTransactionNewest(){
+        List<TransactionDTO> accountDTOs = new ArrayList<TransactionDTO>();
+        ArgumentCaptor<TransactionDTO> savedTransactiontRecords = ArgumentCaptor.forClass(TransactionDTO.class);
+        createAccountAndDoTransactions();
+        verify(mockTransaction,times(3)).save(savedTransactiontRecords.capture());
+        accountDTOs = savedTransactiontRecords.getAllValues();
+        when(mockTransaction.getTransactionsOccurred(accountNumber,3)).thenReturn(accountDTOs);
+        List<TransactionDTO> transactionDTOList = BankAccount.getTransactionsOccurred(accountNumber,3);
+        assertEquals(transactionDTOList,accountDTOs);
 
     }
 
